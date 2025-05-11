@@ -1,7 +1,9 @@
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
-import { TextField, Button, Grid, Card, CardMedia, CardContent, Typography, CircularProgress, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
+import { Grid, CircularProgress, Typography } from '@mui/material';
 import { MovieContext } from '../index';
+import SearchBar from './SearchBar';
+import MovieCard from './MovieCard';
 
 const API_KEY = 'e8c6637c370a65af23e32d8332b056bf';
 
@@ -67,54 +69,19 @@ function Home() {
     }
   };
 
-  const loadMore = () => {
-    setPage((prevPage) => prevPage + 1);
-  };
-
-  useEffect(() => {
-    if (page > 1) {
-      handleSearch(new Event('submit'));
-    }
-  }, [page]);
-
   return (
     <div style={{ padding: '20px' }}>
-      <form onSubmit={handleSearch} style={{ marginBottom: '20px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-        <TextField
-          label="Search for a movie"
-          variant="outlined"
-          fullWidth
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        <FormControl style={{ minWidth: 120 }}>
-          <InputLabel>Genre</InputLabel>
-          <Select value={genre} onChange={(e) => setGenre(e.target.value)}>
-            <MenuItem value="">All</MenuItem>
-            <MenuItem value="28">Action</MenuItem>
-            <MenuItem value="35">Comedy</MenuItem>
-            <MenuItem value="18">Drama</MenuItem>
-            <MenuItem value="27">Horror</MenuItem>
-          </Select>
-        </FormControl>
-        <TextField
-          label="Year"
-          type="number"
-          variant="outlined"
-          value={year}
-          onChange={(e) => setYear(e.target.value)}
-        />
-        <TextField
-          label="Rating (>=)"
-          type="number"
-          variant="outlined"
-          value={rating}
-          onChange={(e) => setRating(e.target.value)}
-        />
-        <Button type="submit" variant="contained" color="primary">
-          Search
-        </Button>
-      </form>
+      <SearchBar
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        genre={genre}
+        setGenre={setGenre}
+        year={year}
+        setYear={setYear}
+        rating={rating}
+        setRating={setRating}
+        handleSearch={handleSearch}
+      />
 
       {error && <Typography color="error">{error}</Typography>}
 
@@ -124,23 +91,7 @@ function Home() {
         <Grid container spacing={3}>
           {searchResults.map((movie) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={movie.id}>
-              <Card>
-                <CardMedia
-                  component="img"
-                  height="300"
-                  image={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
-                  alt={movie.title}
-                />
-                <CardContent>
-                  <Typography variant="h6">{movie.title}</Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    Release Year: {new Date(movie.release_date).getFullYear()}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    Rating: {movie.vote_average}
-                  </Typography>
-                </CardContent>
-              </Card>
+              <MovieCard movie={movie} />
             </Grid>
           ))}
         </Grid>
@@ -148,60 +99,11 @@ function Home() {
         <Grid container spacing={3}>
           {trendingMovies.map((movie) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={movie.id}>
-              <Card>
-                <CardMedia
-                  component="img"
-                  height="300"
-                  image={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
-                  alt={movie.title}
-                />
-                <CardContent>
-                  <Typography variant="h6">{movie.title}</Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    Release Year: {new Date(movie.release_date).getFullYear()}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    Rating: {movie.vote_average}
-                  </Typography>
-                </CardContent>
-              </Card>
+              <MovieCard movie={movie} />
             </Grid>
           ))}
         </Grid>
       )}
-
-      {searchResults.length > 0 && (
-        <Button onClick={loadMore} variant="contained" color="primary" style={{ marginTop: '20px' }}>
-          Load More
-        </Button>
-      )}
-
-      <Typography variant="h4" gutterBottom style={{ marginTop: '40px' }}>
-        Trending Movies Today
-      </Typography>
-      <Grid container spacing={3}>
-        {trendingMovies.map((movie) => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={movie.id}>
-            <Card>
-              <CardMedia
-                component="img"
-                height="300"
-                image={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
-                alt={movie.title}
-              />
-              <CardContent>
-                <Typography variant="h6">{movie.title}</Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Release Year: {new Date(movie.release_date).getFullYear()}
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Rating: {movie.vote_average}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
     </div>
   );
 }
